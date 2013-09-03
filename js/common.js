@@ -24,16 +24,6 @@ function DelCookie(cKey) {
     document.cookie = cKey + "=;expires=" + date.toGMTString() + ';path=/';
 }
 
-
-function commify(n) {
-	var reg = /(^[+-]?\d+)(\d{3})/;
-	n += '';
-
-	while (reg.test(n))
-		n = n.replace(reg, '$1' + ',' + '$2');
-	return n;
-}
-
 $.TreeMenu_v01 = function (options) {
 
     $.TreeMenu_v01.defaults = {
@@ -811,4 +801,23 @@ function GiftGold_TDelete(table_type, seq)
 	{
 		Delete_func();
 	}
+}
+
+
+function View_Width()
+{	
+	var return_width = 0;
+
+	return_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();
+
+	return return_width;
+}
+
+function View_Height()
+{
+	var return_height = 0;
+
+	return_height = $(window).height() - $('#header').outerHeight();
+
+	return return_height;
 }
