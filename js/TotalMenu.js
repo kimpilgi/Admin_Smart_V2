@@ -1,6 +1,9 @@
 (function($){
 
+	var icon_img = { 'dot' : '/images/icon/icon_dot.png', 'plus' : '/images/icon/icon_plus.png', 'minus' : '/images/icon/icon_minus.png' };
+
 	$.fn.extend({
+		
 		TotalMenu : function(options){
 
 			// Default Param
@@ -12,7 +15,6 @@
 			}, options);
 
 			// Variable - Start
-			var icon_img = { 'dot' : '/images/icon/icon_dot.png', 'plus' : '/images/icon/icon_plus.png', 'minus' : '/images/icon/icon_minus.png' };
 			var ajax_indicator = "", ajax_indicator_padding;
 
 			ajax_indicator = ajax_indicator + "<div id='ajax_indicator' style='position: relative; top: 0; height: 100%; z-index:9998;text-align:center; '>"
@@ -68,9 +70,33 @@
 						}
 					};
 
+					var LeftFirstMenuOpen = function($activeLeftUl){
+
+						var $firstLi = "", $parentsList, $href;
+
+						$activeLeftUl.siblings('ul').hide().end().show();	
+
+						$firstLi = $activeLeftUl.find('li').filter(':not(:has(ul))').first();
+						$parentsList = $firstLi.parentsUntil('#' + settings.LeftMenuWrapId);
+
+						$activeLeftUl.find('li a').removeClass('active');
+						$firstLi.find('a').addClass('active');
+
+						for (var i = 0; i < $parentsList.length; i++) {
+							if ($parentsList.get(i).tagName == "UL") {
+								$parentsList.eq(i).css({ display: 'block' });
+							}
+							else if ($parentsList.get(i).tagName == "LI") {
+								$parentsList.eq(i).css({ 'backgroundImage': 'url(' + icon_img.minus + ')' });
+							}
+						}			
+					};
 
 					var Method = {
+
 						Init : function(){
+							var $activeLeftUl;
+
 							$.fn.LinkDisable(menu_links.HeadLinks);
 							$.fn.LinkDisable(menu_links.LeftLinks);
 
@@ -84,22 +110,25 @@
 
 							menu_links.LeftLinks_NHasUl.end().css({ background: 'url(' + icon_img.dot + ') no-repeat center left' });
 
-							$.fn.LeftFirstMenuOpen(menu_links.LeftLinks_NHasUl.end(), icon_img);
+
+							$activeLeftUl = menu_active.ActiveLeftMenu( settings.HeadMenuText );
+							$.fn.LoadLinkData( $activeLeftUl );
+							LeftFirstMenuOpen( $activeLeftUl );
 						},
 						Click : function(){
-							var $this, $activeLeftUl;
+							var $this;
 
 							menu_links.HeadLinks.click(function(){
+								var $activeLeftUl;
+
 								$this = $(this);
 
 								menu_links.HeadLinks.removeClass('active');
 								$this.addClass('active');
-								
-								$activeLeftUl = menu_active.ActiveLeftMenu( $this.text() );
-								$activeLeftUl.siblings('ul').hide().end().show();							
 
-								$.fn.LeftFirstMenuOpen($activeLeftUl.find('li').filter(':not(:has(ul))') , icon_img );
-
+								$activeLeftUl = menu_active.ActiveLeftMenu( $this.text() );							
+								$.fn.LoadLinkData( $activeLeftUl );
+								LeftFirstMenuOpen( $activeLeftUl );
 							});
 
 							menu_links.LeftLinks_HasUl.click(function(e){
@@ -118,19 +147,19 @@
 									}
 								}
 							});
-						}						
+						}
 					};
 
 					Method.Init();
 					Method.Click();
 
-					$.fn.AjaxCheck();
-
-					
+					$.fn.AjaxCheck();	
 				}
 			});
 		},
-		LoadLinkData : function(href){
+		LoadLinkData : function($activeLeftUl){
+			var href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
+
 			$.ajax({
 				type: "GET",
 				url: href,
@@ -143,28 +172,14 @@
 					$('#left_back').height($('#view').height());
 
 					PageMoveRL($('#view'), $('.page'));
+				},
+				error : function(a, b, c, d){
+					var error_msg = "";
+					error_msg += a.responseText + '<br/>'
+
+					$('.page').html(error_msg);
 				}
 			});
-		},
-		LeftFirstMenuOpen : function($leftlinks, icon_img){
-
-			var $firstLi = "", $parentsList, $href;
-
-			$firstLi = $leftlinks.first();
-			$href = $firstLi.find('a').attr('href');
-
-			$parentsList = $firstLi.parentsUntil('#' + settings.LeftMenuWrapId);
-
-			for (var i = 0; i < $parentsList.length; i++) {
-				if ($parentsList.get(i).tagName == "UL") {
-					$parentsList.eq(i).css({ display: 'block' });
-				}
-				else if ($parentsList.get(i).tagName == "LI") {
-					$parentsList.eq(i).css({ 'backgroundImage': 'url(' + icon_img.minus + ')' });
-				}
-			}
-
-			$.fn.LoadLinkData($href);
 		},
 		Error : function(msg){
 			if (window.console)
@@ -181,15 +196,16 @@
 			$(document)
 				.ajaxStart(function(){
 					$('#ajax_indicator').show();
+					console.log(1);
 				})
 				.ajaxComplete(function(){
 					setTimeout( function(){	$('#ajax_indicator').fadeOut(); }, 300);
 				})
 				.ajaxError(function(event, jqxhr, settings, exception){
-
-console.log( $(document) );
+					$.fn.Error(jqxhr.status + '-' + jqxhr.statusText);				
+					$.fn.Error(jqxhr.responseText);
+					$.fn.Error(settings.url);
 				});
 		}
 	});
-
 })(jQuery);

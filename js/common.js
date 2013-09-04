@@ -23,7 +23,7 @@ function DelCookie(cKey) {
     date.setDate(date.getDate() + validity);
     document.cookie = cKey + "=;expires=" + date.toGMTString() + ';path=/';
 }
-
+/*
 $.TreeMenu_v01 = function (options) {
 
     $.TreeMenu_v01.defaults = {
@@ -203,7 +203,7 @@ $.TreeMenu_v01 = function (options) {
         });
     }
 };
-
+*/
 function PageMoveRL(viewObj, pageObj)
 {
 		var distance = 0;
@@ -265,20 +265,6 @@ jQuery.linkUline = function (options) {
         }
     }
 };
-
-// chart height change
-function fluid_height(chart_id, cnt, prevDivid){
-	var height = $(window).height() - $('#'+chart_id).offset().top;
-
-	if (cnt > 1)
-	{
-		if (typeof prevDivid == 'undefined')
-			height = height / cnt;
-		else
-			height = $('#' + prevDivid).height() - 60;
-	}
-	$('#'+chart_id).height(height);
-}
 
 function AjaxExe(url)
 {
@@ -555,252 +541,6 @@ function MergeRow(parentId, tableId)
 			row_count = 2;
 		}
 	});
-}		
-
-
-
-// startDate : 20120310
-function DateDiff(startDate, endDate)
-{
-	var sYear  = startDate.substring(0,4);
-	var sMonth  = startDate.substring(5,7);
-	var sDay  = startDate.substring(8,10);
-
-	var eYear  = endDate.substring(0,4);
-	var eMonth  = endDate.substring(5,7);
-	var eDay  = endDate.substring(8,10);
-
-
-	var sDate = new Date(sYear,sMonth,sDay);
-	var eDate = new Date(eYear,eMonth,eDay);
-
-	return (eDate - sDate) /(1000*60*60*24);
-}
-
-function SelectBoxCall(stype, thisobj)
-{
-	var $this = $(thisobj);
-	var obj_val = $this.val();
-	var id = $this.attr('id');
-
-	var callpage = $this.attr('callpage');
-
-	var common_func = "", type_func = "";
-
-
-	if (obj_val == "")
-	{
-		$('#' + id + ' ~ select').remove();
-
-		if (stype == "I")
-		{
-			if ( id == "etable")
-			{
-				$('#button1').val('E-Table Register');
-			}
-			else if ( id == "atable")
-			{
-				$('#button1').val('A-Table Register');			
-			}
-
-			$('#regtable').val(id.toUpperCase());
-
-			$('#key1').val("");
-			$('#values1').val("");
-			$('#error1').empty();
-		}
-	}
-	else
-	{
-		common_func = function(data){
-			var next_id = $this.next().attr('id');
-
-			if (next_id != 'undefined')
-			{
-				$('#' + next_id).remove();
-			}
-
-			$this.after(data)
-					.next().animate({'backgroundColor' : '#ccc'}, 300, function(){
-						$(this).animate({'backgroundColor' : '#fff'}, 300)
-					})
-					.focus();
-		};
-
-		type_func = function(stype){
-
-			if (stype == "I")
-			{
-				var $next_obj = $this.next();
-
-				if ( $next_obj.attr('id') == "atable")
-				{
-					$('input#regtable').val('ATABLE');
-					$('#button1').val('A-Table Register');
-				}
-				else if ( $next_obj.attr('id') == "ctable")
-				{
-					$('input#regtable').val('CTABLE');
-					$('#button1').val('C-Table Register');
-
-					$next_obj.find('option').each(function(key, value){
-						if (key > 0)
-							$(this).remove();
-					});
-				}
-
-				$('#key1').val("");
-				$('#values1').val("");
-				$('#error1').empty();
-			}
-		};
-		
-		$.ajax({
-			type: "POST",
-			url: "/operation/giftgold/table/" + callpage,
-			data: "seq=" + obj_val + "&stype="+stype,
-			dataType: "html",
-			cache: false,
-			success: function (data) {
-				common_func(data);
-				type_func(stype);
-			}
-		});		
-	}	
-}
-
-function GiftCode_Reg(stype)
-{
-	var error_text = "";
-	var data_seri = "";
-	var beforeSend_func = "", success_func = "";
-
-	data_seri = $('#form' + stype).serialize();
-
-	beforeSend_func = function(){
-		$('#error' + stype).empty();
-
-		if ( $('#key' + stype).val() == "" && $('#values' + stype).val() == "" )
-		{
-			error_text = error_text + "<ul>";
-			error_text = error_text + "<li>This need key</li>";
-			error_text = error_text + "<li>This need values</li>";
-			error_text = error_text + "</ul>";
-
-			$('#error' + stype).html(error_text);
-			return false;
-		}	
-
-		if ( $('#key' + stype).val() == "" )
-		{
-			error_text = error_text + "<ul>";
-			error_text = error_text + "<li>This need key</li>";
-			error_text = error_text + "</ul>";
-
-			$('#error' + stype).html(error_text);
-			return false;
-		}
-
-		if ( $('#values' + stype).val() == "" )
-		{
-			error_text = error_text + "<ul>";
-			error_text = error_text + "<li>This need values</li>";
-			error_text = error_text + "</ul>";
-
-			$('#error' + stype).html(error_text);
-			return false;
-		}
-
-		return true;
-	};
-
-	success_func = function(data){
-		$('#error' + stype).empty();
-
-		if (data.result == 0)
-		{
-			var $selectbox = $('#'+data.result_value.selectbox.toLowerCase());
-
-			if (data.result_value.selectbox.toLowerCase() != "ctable")
-			{
-				$selectbox.append('<option value="' + data.result_value.seq + '">' + data.result_value.values + '</option>')
-						  .animate({'backgroundColor' : '#ccc'}, 300, function(){
-										$(this).animate({'backgroundColor' : '#fff'}, 300)
-									});
-
-			}
-
-			$('#error' + stype).html('<h3 style="color:blue">Success!!!</h3>');
-		}
-		else if (data.result == 1)
-		{
-			$('#error' + stype).html('<h3 style="color:red">Fail!!! Overlap key</h3>');
-		}
-	};
-
-	
-	var validation = beforeSend_func();
-	if (validation)
-	{
-		$.ajax({
-			type: "POST",
-			url: "/operation/giftgold/table/register_proc_ajax.html",
-			data: data_seri,
-			dataType: "json",
-			cache: false,
-			success: function (data) {
-				success_func(data);
-			}
-		});	
-	}
-}
-
-function GiftGold_TDelete(table_type, seq)
-{
-	var sub_obj = $('#atable');
-	var hasObj = sub_obj.children().length;
-	var delete_func = "";
-
-	Delete_func = function(){
-		if (confirm('Do you want delete?'))
-		{
-			$.post('/operation/giftgold/table/delete_proc.html', {'table_type' : table_type, 'seq' : seq}, function(response){
-
-				var ttype = response.table_type.toLowerCase();
-				var seq = response.seq;
-
-				var delete_obj = $('.' + ttype + seq);
-
-				if (ttype == 'e')
-				{
-					sub_obj.empty();
-				}
-
-				delete_obj.remove();
-
-			}, 'json');
-		}
-	};
-
-
-	if (table_type == 'E')
-	{
-
-		var haschildrenClass = $('.p' + seq).length;
-
-		if (haschildrenClass)
-		{
-			Delete_func();
-		}
-		else
-		{
-			alert("Click description and this data check");
-		}
-	}
-	else
-	{
-		Delete_func();
-	}
 }
 
 
@@ -811,13 +551,4 @@ function View_Width()
 	return_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();
 
 	return return_width;
-}
-
-function View_Height()
-{
-	var return_height = 0;
-
-	return_height = $(window).height() - $('#header').outerHeight();
-
-	return return_height;
 }

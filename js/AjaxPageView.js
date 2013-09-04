@@ -13,19 +13,17 @@
 
     function Execute() {
         var $view_area = $('#' + opts.View_Area_Id);
+		var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();;
+		var view_height = $(window).height() - $('#header').outerHeight();
+
+		$view_area.width(view_width).height(view_height);
+		//
+		$('#left_back').height(view_height);
+
         var $base_width = $view_area.width();
         var $base_height = $view_area.height();
-        var ajax_indicator_padding;
 
         var $area_width, $area_height, $this, $page_area, $link_url
-
-        var ajax_indicator = "";
-        ajax_indicator = ajax_indicator + "<div id='ajax_indicator' style='position: relative; top: 0; height: 100%; z-index:9998;text-align:center; '>"
-        ajax_indicator = ajax_indicator + " <div id='ajax_indicator_back' style='height: 100%; background-color: #000; opacity : 0.3; -ms-filter: alpha(opacity=30); filter: alpha(opacity=30);'></div>";
-        ajax_indicator = ajax_indicator + " <div id='ajax_indicator_circle' style='position:absolute; top: 0; text-align:center; width: 100%; z-index:9999;'><img src='/images/ajax-loader.gif' alt='LOADING... WAIT PLEASE' title='LOADING... WAIT PLEASE' /></div>";
-        ajax_indicator = ajax_indicator + "</div>";
-
-        var loadDivObj = jQuery(ajax_indicator);
 
         $('.' + opts.Link_Class).click(function (e) {
             e.preventDefault();
@@ -39,46 +37,33 @@
 
             $page_area = $('.' + opts.Page_Area_Class);
 
-            $view_area.append(loadDivObj);
+			$.ajax({
+				type: "GET",
+				url: $link_url,
+				dataType: "html",
+				cache: false,
+				success: function (data) {
+					var $listNotHasUl = $('#left').find('li').filter(':not(:has(ul))');
+					$listNotHasUl.children('a').removeClass('active');
 
-			ajax_indicator_padding = parseInt( ($(window).height() - $('#header').outerHeight()) / 2 );
-            loadDivObj.find('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
+					$this.addClass('active');
 
-            loadDivObj.fadeIn(function () {
-                setTimeout(function () {
-                    $.ajax({
-                        type: "GET",
-                        url: $link_url,
-                        dataType: "html",
-                        cache: false,
-                        success: function (data) {
-                            loadDivObj.fadeOut(function () {
-                                $(this).remove();
+					SlidePage(data);
+				},
+				error: function (a, b, c) {
+					var error_msg = "";
+					error_msg += a.responseText + '<br/>'
 
-								var $listNotHasUl = $('#left').find('li').filter(':not(:has(ul))');
-								$listNotHasUl.children('a').removeClass('active');
-
-								$this.addClass('active');
-
-                                SlidePage(data);
-                            });
-                        },
-                        error: function (request, status, error) {
-                            alert("This content failed to load.");
-
-                            loadDivObj.remove();
-                        }
-                    });
-                }, 200);
-            });
+					$('.page').html(error_msg);
+				}
+			});
 
             function SlidePage(data) {
 
                 var $clone = $page_area.clone().css({ left: $area_width }).html(data);
 
-                $view_area.append($clone);
-
-                $page_area.find('div').removeAttr('id');
+				$page_area.find('*').removeAttr('id').removeAttr('class').remove('form');
+                $view_area.children('.page').after($clone);	// include script execute
 
 				$view_area.height($(window).height() - $('#header').outerHeight());
 
@@ -96,7 +81,7 @@
                 });
 
                 $clone.animate({ left: 0 }, opts.Slide_speed, function () {
-                    $(this).prev().remove();
+                    $(this).prev().remove();					
 
 					PageMoveRL($view_area, $clone);
                 });
