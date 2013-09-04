@@ -9,14 +9,18 @@
 
     var opts = $.extend({}, jQuery.AjaxPageView.defaults, options);
 
-    return $(window).load(Execute);
+    Execute();
 
     function Execute() {
         var $view_area = $('#' + opts.View_Area_Id);
 		var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();;
 		var view_height = $(window).height() - $('#header').outerHeight();
 
+		var	LeftLinks_HasUl = $('#left ul li').filter(':has(ul)').children('a');
+		LeftLinks_HasUl.attr('href', '').removeClass('callajax');
+
 		$view_area.width(view_width).height(view_height);
+
 		//
 		$('#left_back').height(view_height);
 
@@ -43,12 +47,13 @@
 				dataType: "html",
 				cache: false,
 				success: function (data) {
+					SlidePage(data);
+				},
+				complete : function(){
 					var $listNotHasUl = $('#left').find('li').filter(':not(:has(ul))');
 					$listNotHasUl.children('a').removeClass('active');
 
 					$this.addClass('active');
-
-					SlidePage(data);
 				},
 				error: function (a, b, c) {
 					var error_msg = "";
@@ -63,6 +68,7 @@
                 var $clone = $page_area.clone().css({ left: $area_width }).html(data);
 
 				$page_area.find('*').removeAttr('id').removeAttr('class').remove('form');
+
                 $view_area.children('.page').after($clone);	// include script execute
 
 				$view_area.height($(window).height() - $('#header').outerHeight());

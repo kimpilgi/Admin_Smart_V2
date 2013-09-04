@@ -1,7 +1,7 @@
 ﻿* {margin:0; padding:0}
 		
-html, body {height: 100%; }
-body {font-size: 12px; font-family: Arial, NG, sans-serif; overflow-x: hidden;}
+html, body {height: 100%;  }
+body {font-size: 12px; font-family: Arial, NG, sans-serif; overflow-x: hidden; }
 
 a, a:active {color: #213D4B; text-decoration:none; cursor:pointer;}
 a:hover {color: Red;}

@@ -104,9 +104,9 @@
 							$objs.left.children('ul').not( menu_active.ActiveLeftMenu(settings.HeadMenuText) ).hide();	// head menu matching left menu view
 
 							menu_list.LeftMenuList.css({ paddingLeft: '12px' });
-							menu_links.LeftLinks_HasUl.attr('href', '').removeClass('callajax')
-													.end().find('ul').hide()
-													.end().css({ background: 'url(' + icon_img.plus + ') no-repeat 0 2px' });
+//							menu_links.LeftLinks_HasUl.attr('href', '').removeClass('callajax')
+							menu_links.LeftLinks_HasUl.end().find('ul').hide()
+													  .end().css({ background: 'url(' + icon_img.plus + ') no-repeat 0 2px' });
 
 							menu_links.LeftLinks_NHasUl.end().css({ background: 'url(' + icon_img.dot + ') no-repeat center left' });
 
@@ -165,7 +165,7 @@
 				url: href,
 				dataType: "html",
 				cache: false,
-				success: function (data) {				
+				success: function (data) {
 					$('.page').html(data);
 
 					$('#view').height($('.page').height());
@@ -196,10 +196,11 @@
 			$(document)
 				.ajaxStart(function(){
 					$('#ajax_indicator').show();
-					console.log(1);
 				})
 				.ajaxComplete(function(){
-					setTimeout( function(){	$('#ajax_indicator').fadeOut(); }, 300);
+					setTimeout( function(){	
+						$('#ajax_indicator').fadeOut();  
+					}, 300);
 				})
 				.ajaxError(function(event, jqxhr, settings, exception){
 					$.fn.Error(jqxhr.status + '-' + jqxhr.statusText);				
