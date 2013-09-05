@@ -159,18 +159,34 @@
 		LoadLinkData : function($activeLeftUl){
 			var href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
 
+			$('#view').height($(window).height() - $('#header').outerHeight());
+
 			$.ajax({
 				type: "GET",
 				url: href,
 				dataType: "html",
 				cache: false,
 				success: function (data) {
-					$('.page').html(data);
 
-					$('#view').height($('.page').height());
-					$('#left_back').height($('#view').height());
+					// 정리
+								if ($('#view').height() > $(window).height() - $('#header').outerHeight() )
+								{
+									$('#view').height( $(window).height() - $('#header').outerHeight() );
+								}
 
-					PageMoveRL($('#view'), $('.page'));
+								$('.page').html(data);
+
+								if ($('.page').height() > $('#view').height())
+								{
+									$('#view').height($('.page').height() + 30 );
+								}
+
+								$('#left_back').height($('#contents').height());
+
+								PageMoveRL($('#view'), $('.page'));					
+					
+					
+					
 				},
 				error : function(a, b, c, d){
 					var error_msg = "";
@@ -215,7 +231,25 @@
 							data : $this.serialize(),
 							cache: false,
 							success: function (data) {
+					// 정리
+								if ($('#view').height() > $(window).height() - $('#header').outerHeight() )
+								{
+									$('#view').height( $(window).height() - $('#header').outerHeight() );
+								}
+
 								$(settings.target).html(data);
+
+								if ($('.page').height() > $('#view').height())
+								{
+									$('#view').height($('.page').height() + 30 );
+								}
+
+								$('#left_back').height($('#contents').height());
+
+								PageMoveRL($('#view'), $('.page'));
+
+
+
 
 								callbacks.add(callMethod);
 								callbacks.fire(data);
