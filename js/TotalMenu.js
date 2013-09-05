@@ -104,7 +104,6 @@
 							$objs.left.children('ul').not( menu_active.ActiveLeftMenu(settings.HeadMenuText) ).hide();	// head menu matching left menu view
 
 							menu_list.LeftMenuList.css({ paddingLeft: '12px' });
-//							menu_links.LeftLinks_HasUl.attr('href', '').removeClass('callajax')
 							menu_links.LeftLinks_HasUl.end().find('ul').hide()
 													  .end().css({ background: 'url(' + icon_img.plus + ') no-repeat 0 2px' });
 
@@ -190,6 +189,45 @@
 		LinkDisable : function(linkObj){
 			linkObj.click(function(e){
 				e.preventDefault();
+			});
+		},
+		ajaxSubmit : function(options){
+			// Default Param
+			settings = jQuery.extend({
+				method : 'POST',
+				action : '',
+				datatype : 'html',
+				target : '.page'
+			}, options);
+
+			return this.each(function(){
+				var $this = $(this);
+
+				var methods = {
+
+					basic : function($this){
+
+						$.ajax({
+							type: settings.method,
+							url: settings.action,
+							dataType: settings.datatype,
+							data : $this.serialize(),
+							cache: false,
+							success: function (data) {
+								$(settings.target).html(data);
+							},
+							error : function(a, b, c, d){
+								var error_msg = "";
+								error_msg += a.responseText + '<br/>';
+
+								$(settings.target).html(error_msg);
+							}
+						});											
+					}
+				};
+
+				methods.basic($this);
+				
 			});
 		},
 		AjaxCheck : function(){

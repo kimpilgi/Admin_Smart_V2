@@ -1,37 +1,21 @@
 
 <script type="text/javascript">
-//	$(document).ready(function(){
+	var width = View_Width() - 16;
 
-		var width = View_Width() - 16;
-
-		$("#t1").width(width).mCustomScrollbar({
-			horizontalScroll:true,
-			advanced:{autoExpandHorizontalScroll:true,updateOnContentResize:false},
-			theme:"dark-thin"
-		});
-//	});
+	$("#t1").mCustomScrollbar({
+		horizontalScroll:true,
+		advanced:{autoExpandHorizontalScroll:true},
+		theme:"dark-thin"
+	});
 </script>
 
 
 <h2>PAGE 1</h2>
 
-<div id="t1" style="border: 1px solid #ccc; padding: 5px;">
+<div id="t1" style="position: relative; width: 1000px; border: 1px solid #ccc; padding: 5px; box-sizing: border-box;">
 
-	<table width="1500">
-		<tr>
-			<td width="100">1</td>
-			<td width="100">2</td>
-			<td width="100">3</td>
-			<td width="100">4</td>
-			<td width="100">5</td>
-			<td width="100">6</td>
-			<td width="100">7</td>
-			<td width="100">8</td>
-			<td width="100">9</td>
-			<td width="100">10</td>
-			<td width="150">11</td>
-		</tr>
-	</table>
+	<p style="border: 1px solid; width: 2200px;">dddd</p>
+	
 
 </div>
 

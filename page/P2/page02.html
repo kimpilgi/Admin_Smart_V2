@@ -1,40 +1,31 @@
+﻿<%
+	text1 = request("text1")
+	text2 = request("text2")
 
-<script type="text/javascript">
-	$(document).ready(function(){
-
-		var width = View_Width() - 20;
-
-		$("#t2").width(width).mCustomScrollbar({
-			horizontalScroll:true,
-			advanced:{autoExpandHorizontalScroll:true,updateOnContentResize:false},
-			theme:"dark-thin"
-		});
-
-	});
-</script>
+	Response.write text1 & "====" & text2
+%>
 
 
-<h2>PAGE 2</h2>
+<form id="form1">
+	<input type="text" name="text1" value="sdf" />
+	<input type="text" name="text2" value="sfsf" />
+</form>
 
-<div id="t2" style="border: 1px solid #ccc; padding: 5px;">
+<input type="button" value="button" onclick="test()" />
 
-	<table width="1500">
-		<tr>
-			<td width="100">1</td>
-			<td width="100">2</td>
-			<td width="100">3</td>
-			<td width="100">4</td>
-			<td width="100">5</td>
-			<td width="100">6</td>
-			<td width="100">7</td>
-			<td width="100">8</td>
-			<td width="100">9</td>
-			<td width="100">10</td>
-			<td width="150">11</td>
-		</tr>
-	</table>
+<div id="target" style="border: 1px solid red; width: 500px; height: 100px;">
 
 </div>
+
+<script type="text/javascript">
+	function test(){
+		$('#form1').ajaxSubmit({
+			'method' : 'POST',
+			'action' : '/page/p2/page02_ajax.html',
+			'target' : '#target'
+		});
+	}
+</script>
 
 
 
