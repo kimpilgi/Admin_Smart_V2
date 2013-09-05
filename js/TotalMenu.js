@@ -191,22 +191,23 @@
 				e.preventDefault();
 			});
 		},
-		ajaxSubmit : function(options){
+		ajaxSubmit : function(options, callMethod){
+
+			var callbacks = $.Callbacks();
+
 			// Default Param
 			settings = jQuery.extend({
 				method : 'POST',
 				action : '',
 				datatype : 'html',
 				target : '.page'
-			}, options);
+			}, options || {});
 
 			return this.each(function(){
 				var $this = $(this);
 
 				var methods = {
-
 					basic : function($this){
-
 						$.ajax({
 							type: settings.method,
 							url: settings.action,
@@ -215,6 +216,9 @@
 							cache: false,
 							success: function (data) {
 								$(settings.target).html(data);
+
+								callbacks.add(callMethod);
+								callbacks.fire(data);
 							},
 							error : function(a, b, c, d){
 								var error_msg = "";

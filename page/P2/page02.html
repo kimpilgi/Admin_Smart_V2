@@ -1,12 +1,4 @@
-﻿<%
-	text1 = request("text1")
-	text2 = request("text2")
-
-	Response.write text1 & "====" & text2
-%>
-
-
-<form id="form1">
+﻿<form id="form1">
 	<input type="text" name="text1" value="sdf" />
 	<input type="text" name="text2" value="sfsf" />
 </form>
@@ -17,6 +9,20 @@
 
 </div>
 
+
+
+<form id="form2">
+	<input type="text" name="text1" value="" />
+	<input type="text" name="text2" value="" />
+</form>
+
+<input type="button" value="button" onclick="test2()" />
+
+<div id="target2" style="border: 1px solid red; width: 500px; height: 100px;">
+
+</div>
+
+
 <script type="text/javascript">
 	function test(){
 		$('#form1').ajaxSubmit({
@@ -24,8 +30,19 @@
 			'action' : '/page/p2/page02_ajax.html',
 			'target' : '#target'
 		});
+	} 
+	function test2(){
+		$('#form2').ajaxSubmit({
+			'method' : 'POST',
+			'action' : '/page/p2/page02_ajax.html',
+			'target' : '#target2'
+		});
 	}
 </script>
+
+
+
+
 
 
 
