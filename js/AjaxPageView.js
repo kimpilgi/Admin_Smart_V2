@@ -36,6 +36,12 @@
 
             $link_url = $this.attr('href');
 
+			if ($link_url == "")
+			{
+				$.fn.Error("Nothing connect link.");
+				$link_url = "/error_page.html";
+			}
+
             $area_width = $view_area.width();
             $area_height = $view_area.height();
 
@@ -73,21 +79,22 @@
 
 				$view_area.height($(window).height() - $('#header').outerHeight());
 
-                if ($clone.height() > $base_height) {
-                    $view_area.height(10+$clone.height());
-                    $('#left_back').height($('#contents').height());
-                }
-
-                if ($page_area.width() > $base_width) {
-                    $page_area.width($base_width);
-                }
 
                 $page_area.animate({ left: $base_width * -1 }, opts.Slide_speed, function () {
 
                 });
 
                 $clone.animate({ left: 0 }, opts.Slide_speed, function () {
-                    $(this).prev().remove();					
+                    $(this).prev().remove();
+
+					if ($(this).height() > $base_height) {
+						$view_area.height($(this).height() + 20);
+						$('#left_back').height($('#contents').height());
+					}
+
+					if ($page_area.width() > $base_width) {
+						$page_area.width($base_width);
+					}
 
 					PageMoveRL($view_area, $clone);
                 });

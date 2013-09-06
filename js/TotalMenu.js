@@ -8,8 +8,9 @@
 
 			// Default Param
 			settings = jQuery.extend({
+				MainIndexUrl : "",
 				HeadMenuWrapId : "head",
-				HeadMenuText : "",
+				HeadMenuRel : "",
 				LeftMenuWrapId : "left",
 				LeftMenuText : ""
 			}, options);
@@ -59,14 +60,14 @@
 					var menu_active = {
 						ActiveHeadMenu : function(menutext){
 							menu_links.HeadLinks.each(function(){							
-								var text = $(this).text();
+								var rel = $(this).attr('rel');
 
-								if (text == menutext)
+								if (rel == menutext)
 									$(this).addClass('active');
 							});
 						},
-						ActiveLeftMenu : function(headmenutext){
-							return $('ul#' + headmenutext)
+						ActiveLeftMenu : function(HeadMenuRel){
+							return $('ul#' + HeadMenuRel)
 						}
 					};
 
@@ -100,24 +101,35 @@
 							$.fn.LinkDisable(menu_links.HeadLinks);
 							$.fn.LinkDisable(menu_links.LeftLinks);
 
-							menu_active.ActiveHeadMenu(settings.HeadMenuText);	// head menu active
-							$objs.left.children('ul').not( menu_active.ActiveLeftMenu(settings.HeadMenuText) ).hide();	// head menu matching left menu view
+							if (settings.MainIndexUrl != "")
+							{
+								$.fn.LoadLinkData( settings.MainIndexUrl, 'Main' );
+								menu_list.LeftMenuList.hide();
+							}
+							else
+							{
+								menu_active.ActiveHeadMenu(settings.HeadMenuRel);	// head menu active
+								$objs.left.children('ul').not( menu_active.ActiveLeftMenu(settings.HeadMenuRel) ).hide();	// head menu matching left menu view
+
+								$activeLeftUl = menu_active.ActiveLeftMenu( settings.HeadMenuRel );
+								$.fn.LoadLinkData( $activeLeftUl );
+								LeftFirstMenuOpen( $activeLeftUl );
+							}
 
 							menu_list.LeftMenuList.css({ paddingLeft: '12px' });
 							menu_links.LeftLinks_HasUl.end().find('ul').hide()
 													  .end().css({ background: 'url(' + icon_img.plus + ') no-repeat 0 2px' });
 
 							menu_links.LeftLinks_NHasUl.end().css({ background: 'url(' + icon_img.dot + ') no-repeat center left' });
-
-
-							$activeLeftUl = menu_active.ActiveLeftMenu( settings.HeadMenuText );
-							$.fn.LoadLinkData( $activeLeftUl );
-							LeftFirstMenuOpen( $activeLeftUl );
 						},
 						Click : function(){
 							var $this;
 
 							menu_links.HeadLinks.click(function(){
+
+								if (settings.MainIndexUrl != "")
+									menu_list.LeftMenuList.show();
+
 								var $activeLeftUl;
 
 								$this = $(this);
@@ -125,7 +137,7 @@
 								menu_links.HeadLinks.removeClass('active');
 								$this.addClass('active');
 
-								$activeLeftUl = menu_active.ActiveLeftMenu( $this.text() );							
+								$activeLeftUl = menu_active.ActiveLeftMenu( $this.attr('rel') );							
 								$.fn.LoadLinkData( $activeLeftUl );
 								LeftFirstMenuOpen( $activeLeftUl );
 							});
@@ -156,10 +168,23 @@
 				}
 			});
 		},
-		LoadLinkData : function($activeLeftUl){
-			var href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
+		LoadLinkData : function($activeLeftUl, type){
+			if (type == "Main")
+			{
+				var href = $activeLeftUl;
+			}
+			else
+			{
+				var href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
 
-			$('#view').height($(window).height() - $('#header').outerHeight());
+				$('#view').height($(window).height() - $('#header').outerHeight());
+
+				if (href == "")
+				{
+					$.fn.Error("Nothing connect link.");
+					href = "/error_page.html";
+				}
+			}
 
 			$.ajax({
 				type: "GET",
@@ -176,6 +201,8 @@
 					$('.page').html(error_msg);
 				}
 			});
+
+
 		},
 		Error : function(msg){
 			if (window.console)
