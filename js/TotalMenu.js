@@ -167,26 +167,7 @@
 				dataType: "html",
 				cache: false,
 				success: function (data) {
-
-					// 정리
-								if ($('#view').height() > $(window).height() - $('#header').outerHeight() )
-								{
-									$('#view').height( $(window).height() - $('#header').outerHeight() );
-								}
-
-								$('.page').html(data);
-
-								if ($('.page').height() > $('#view').height())
-								{
-									$('#view').height($('.page').height() + 30 );
-								}
-
-								$('#left_back').height($('#contents').height());
-
-								PageMoveRL($('#view'), $('.page'));					
-					
-					
-					
+					Revision_Height('.page', data);
 				},
 				error : function(a, b, c, d){
 					var error_msg = "";
@@ -231,25 +212,8 @@
 							data : $this.serialize(),
 							cache: false,
 							success: function (data) {
-					// 정리
-								if ($('#view').height() > $(window).height() - $('#header').outerHeight() )
-								{
-									$('#view').height( $(window).height() - $('#header').outerHeight() );
-								}
 
-								$(settings.target).html(data);
-
-								if ($('.page').height() > $('#view').height())
-								{
-									$('#view').height($('.page').height() + 30 );
-								}
-
-								$('#left_back').height($('#contents').height());
-
-								PageMoveRL($('#view'), $('.page'));
-
-
-
+								Revision_Height(settings.target, data);
 
 								callbacks.add(callMethod);
 								callbacks.fire(data);
@@ -285,4 +249,23 @@
 				});
 		}
 	});
+
+	function Revision_Height(target, data)
+	{
+		if ($('#view').height() > $(window).height() - $('#header').outerHeight() )
+		{
+			$('#view').height( $(window).height() - $('#header').outerHeight() );
+		}
+
+		$(target).html(data);
+
+		if ($('.page').height() > $('#view').height())
+		{
+			$('#view').height($('.page').height() + 30 );
+		}
+
+		$('#left_back').height($('#contents').height());
+
+		PageMoveRL($('#view'), $('.page'));		
+	}
 })(jQuery);
