@@ -71,14 +71,15 @@
 
             function SlidePage(data) {
 
-                var $clone = $page_area.clone().css({ left: $area_width }).html(data);
+                var $clone = $page_area.clone().css({ left: $area_width }); 
 
-				$page_area.find('*').removeAttr('id').removeAttr('class').remove('form');
+				$page_area.find('*').remove();
 
-                $view_area.children('.page').after($clone);	// include script execute
+				$view_area.children('.page').after($clone);	
+
+				$clone.html(data); // include script execute
 
 				$view_area.height($(window).height() - $('#header').outerHeight());
-
 
                 $page_area.animate({ left: $base_width * -1 }, opts.Slide_speed, function () {
 
