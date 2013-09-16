@@ -1,6 +1,7 @@
 (function($){
 
 	var icon_img = { 'dot' : '/images/icon/icon_dot.png', 'plus' : '/images/icon/icon_plus.png', 'minus' : '/images/icon/icon_minus.png' };
+	var ajaxRunning = false;
 
 	$.fn.extend({
 		
@@ -169,40 +170,48 @@
 			});
 		},
 		LoadLinkData : function($activeLeftUl, type){
-			if (type == "Main")
-			{
-				var href = $activeLeftUl;
-			}
-			else
-			{
-				var href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
+			var href;
 
-				$('#view').height($(window).height() - $('#header').outerHeight());
-
-				if (href == "")
+			if ($.fn.IsAjaxRunning() == false)
+			{
+				if (type == "Main")
 				{
-					$.fn.Error("Nothing connect link.");
-					href = "/error_page.html";
+					href = $activeLeftUl;
 				}
+				else
+				{
+					href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
+
+					$('#view').height($(window).height() - $('#header').outerHeight());
+
+					if (href == "")
+					{
+						$.fn.Error("Nothing connect link.");
+						href = "/error_page.html";
+					}
+				}
+
+				$.ajax({
+					type: "GET",
+					url: href,
+					dataType: "html",
+					cache: false,
+					success: function (data) {
+						Revision_Height('.page', data);
+					},
+					error : function(a, b, c, d){
+						var error_msg = "";
+
+						if (a.readyState == "4")
+						{
+							error_msg += a.status + " " + a.statusText + "<br/>";
+							error_msg += "Is trying to connect url - '" + href + "'";
+						}
+
+						$('.page').html(error_msg);
+					}
+				});
 			}
-
-			$.ajax({
-				type: "GET",
-				url: href,
-				dataType: "html",
-				cache: false,
-				success: function (data) {
-					Revision_Height('.page', data);
-				},
-				error : function(a, b, c, d){
-					var error_msg = "";
-					error_msg += a.responseText + '<br/>'
-
-					$('.page').html(error_msg);
-				}
-			});
-
-
 		},
 		Error : function(msg){
 			if (window.console)
@@ -263,17 +272,23 @@
 			$(document)
 				.ajaxStart(function(){
 					$('#ajax_indicator').show();
+					ajaxRunning = true;
 				})
 				.ajaxComplete(function(){
 					setTimeout( function(){	
-						$('#ajax_indicator').fadeOut();  
+						$('#ajax_indicator').fadeOut(function(){
+							ajaxRunning = false;
+						});  						
 					}, 300);
 				})
 				.ajaxError(function(event, jqxhr, settings, exception){
-					$.fn.Error(jqxhr.status + '-' + jqxhr.statusText);				
-					$.fn.Error(jqxhr.responseText);
-					$.fn.Error(settings.url);
+					//$.fn.Error(jqxhr.status + '-' + jqxhr.statusText);				
+					//$.fn.Error(jqxhr.responseText);
+					//$.fn.Error(settings.url);
 				});
+		},
+		IsAjaxRunning : function(){
+			return ajaxRunning;
 		}
 	});
 

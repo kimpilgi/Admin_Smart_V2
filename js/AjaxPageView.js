@@ -32,42 +32,50 @@
         $('.' + opts.Link_Class).click(function (e) {
             e.preventDefault();
 
-            $this = $(this);
-
-            $link_url = $this.attr('href');
-
-			if ($link_url == "")
+			if ($.fn.IsAjaxRunning() == false)
 			{
-				$.fn.Error("Nothing connect link.");
-				$link_url = "/error_page.html";
-			}
+				$this = $(this);
 
-            $area_width = $view_area.width();
-            $area_height = $view_area.height();
+				$link_url = $this.attr('href');
 
-            $page_area = $('.' + opts.Page_Area_Class);
-
-			$.ajax({
-				type: "GET",
-				url: $link_url,
-				dataType: "html",
-				cache: false,
-				success: function (data) {
-					SlidePage(data);
-				},
-				complete : function(){
-					var $listNotHasUl = $('#left').find('li').filter(':not(:has(ul))');
-					$listNotHasUl.children('a').removeClass('active');
-
-					$this.addClass('active');
-				},
-				error: function (a, b, c) {
-					var error_msg = "";
-					error_msg += a.responseText + '<br/>'
-
-					$('.page').html(error_msg);
+				if ($link_url == "")
+				{
+					$.fn.Error("Nothing connect link.");
+					$link_url = "/error_page.html";
 				}
-			});
+
+				$area_width = $view_area.width();
+				$area_height = $view_area.height();
+
+				$page_area = $('.' + opts.Page_Area_Class);
+
+				$.ajax({
+					type: "GET",
+					url: $link_url,
+					dataType: "html",
+					cache: false,
+					success: function (data) {
+						SlidePage(data);
+					},
+					complete : function(){
+						var $listNotHasUl = $('#left').find('li').filter(':not(:has(ul))');
+						$listNotHasUl.children('a').removeClass('active');
+
+						$this.addClass('active');
+					},
+					error : function(a, b, c, d){
+						var error_msg = "";
+
+						if (a.readyState == "4")
+						{
+							error_msg += a.status + " " + a.statusText + "<br/>";
+							error_msg += "Is trying to connect url - '" + $link_url + "'";
+						}
+
+						$('.page').html(error_msg);
+					}
+				});
+			}
 
             function SlidePage(data) {
 
