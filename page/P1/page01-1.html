@@ -1,1 +1,36 @@
-<h1>test</h1>
+한글
+<div>
+	<a href="/page/p1/1.html" class="test">sdfsdf</a>
+	<a href="/page/p1/2.html" class="test">sbsdf</a>
+	<a href="/page/p1/3.html" class="test">sdfd</a>
+	<a href="/page/p1/4.html" class="test">4</a>
+	<a href="/page/p1/5.html" class="test">5</a>
+</div>
+
+<form id="form1">
+	<input type="text" name="text1" value="sdf" />
+	<input type="text" name="text2" value="sfsf" />
+</form>
+
+<input type="button" value="button" onclick="test()" />
+
+<div id="target" style="border: 1px solid red; width: 500px; height: 100px;">
+
+</div>
+
+<script type="text/javascript">
+
+	$.fn.LinkDisable( $('.test'), function(e){
+		$(e).ajaxSubmit({
+			'target' : '#target'
+		});
+	});
+
+	function test(){
+		$('#form1').ajaxSubmit({
+			'action' : '/page/p1/4.html',
+			'target' : '#target'
+		});
+	}
+
+</script>

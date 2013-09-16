@@ -13,15 +13,14 @@
 
     function Execute() {
         var $view_area = $('#' + opts.View_Area_Id);
-		var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();;
+		var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();
 		var view_height = $(window).height() - $('#header').outerHeight();
 
 		var	LeftLinks_HasUl = $('#left ul li').filter(':has(ul)').children('a');
 		LeftLinks_HasUl.attr('href', '').removeClass('callajax');
 
-		$view_area.width(view_width).height(view_height);
+		$view_area.width(view_width);
 
-		//
 		$('#left_back').height(view_height);
 
         var $base_width = $view_area.width();
@@ -87,7 +86,7 @@
 
 				$clone.html(data); // include script execute
 
-				$view_area.height($(window).height() - $('#header').outerHeight());
+				$view_area.height($(window).height() - $('#header').outerHeight()-1);
 
                 $page_area.animate({ left: $base_width * -1 }, opts.Slide_speed, function () {
 
@@ -97,7 +96,7 @@
                     $(this).prev().remove();
 
 					if ($(this).height() > $base_height) {
-						$view_area.height($(this).height() + 20);
+						$view_area.height($(this).height());
 						$('#left_back').height($('#contents').height());
 					}
 
@@ -105,18 +104,24 @@
 						$page_area.width($base_width);
 					}
 
-					PageMoveRL($view_area, $clone);
+					//PageMoveRL($view_area, $clone);
                 });
             }
         });
 
         $(window).resize(function () {
-			var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_left').outerWidth();
-			$('#view').width(view_width);
+			var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();
+			var view_height = $(window).height() - $('#header').outerHeight() - 1;
+
+			$('#view').width(view_width).height(view_height);
+			$('#left_back').height(view_height);
 
             $('.page').css({ left: 0 });
 
-			PageMoveRL($view_area, $('.page'));
+			//PageMoveRL($view_area, $('.page'));
+
+			var ajax_indicator_padding = parseInt( ($(window).height() - $('#header').outerHeight()) / 2 );			
+			$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
         });
     }
 };

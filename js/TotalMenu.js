@@ -182,7 +182,7 @@
 				{
 					href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
 
-					$('#view').height($(window).height() - $('#header').outerHeight());
+					$('#view').height($(window).height() - $('#header').outerHeight() - 1);
 
 					if (href == "")
 					{
@@ -219,14 +219,24 @@
 			else
 				alert(msg);
 		},
-		LinkDisable : function(linkObj){
+		LinkDisable : function(linkObj, callMethod){
+			var callbacks = $.Callbacks();
+
 			linkObj.click(function(e){
 				e.preventDefault();
+
+				if (typeof callMethod != "undefined")
+				{
+					callbacks.add(callMethod);
+					callbacks.fire(e.toElement);
+					callbacks.empty();
+				}
 			});
 		},
 		ajaxSubmit : function(options, callMethod){
 
 			var callbacks = $.Callbacks();
+			var tagName = "";
 
 			// Default Param
 			settings = jQuery.extend({
@@ -238,6 +248,26 @@
 
 			return this.each(function(){
 				var $this = $(this);
+
+				tagName = this.tagName;
+
+				if (tagName == "A")
+				{						
+					settings.action = $this.attr('href');
+				}
+				else if (tagName == "FORM")
+				{
+					if (settings.action == '')
+					{
+						if (typeof $this.attr('action') != "undefined"){
+							settings.action = $this.attr('action');
+						}
+						else{
+							$.fn.Error('href or action value empty');
+							return false;
+						}
+					}
+				}
 
 				var methods = {
 					basic : function($this){
@@ -308,6 +338,6 @@
 
 		$('#left_back').height($('#contents').height());
 
-		PageMoveRL($('#view'), $('.page'));		
+		//PageMoveRL($('#view'), $('.page'));		
 	}
 })(jQuery);

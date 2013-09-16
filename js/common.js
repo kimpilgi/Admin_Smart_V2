@@ -26,30 +26,30 @@ function DelCookie(cKey) {
 
 function PageMoveRL(viewObj, pageObj)
 {
-		var distance = 0;
+	var distance = 0;
 
-		$('.page_move_right').unbind('click');
-		$('.page_move_left').unbind('click');
+	$('.page_move_right').unbind('click');
+	$('.page_move_left').unbind('click');
 
-		if (viewObj.width() < pageObj.width()) {
-			distance = ((pageObj.width() - viewObj.width() + 40) * -1) + 'px';
+	if (viewObj.width() < pageObj.width()) {
+		distance = ((pageObj.width() - viewObj.width() + 30) * -1) + 'px';
 
-			$('.page_move_right').click(function (e) {
-					$('.page').animate({ left: distance }, 500);
-			});
-		}
-		else
-		{
-			$('.page_move_right').click(function (e) {
-					pageObj.animate({ left: '-40px' }, 400, function(){
-						$(this).animate({ left: 0 }, 300);
-					});
-			});
-		}
-
-		$('.page_move_left').click(function (e) {
-				pageObj.animate({ left: 0 }, 500);
+		$('.page_move_right').click(function (e) {
+				$('.page').animate({ left: distance }, 500);
 		});
+	}
+	else
+	{
+		$('.page_move_right').click(function (e) {
+				pageObj.animate({ left: '-30px' }, 400, function(){
+					$(this).animate({ left: 0 }, 300);
+				});
+		});
+	}
+
+	$('.page_move_left').click(function (e) {
+			pageObj.animate({ left: 0 }, 500);
+	});
 }
 
 jQuery.linkUline = function (options) {

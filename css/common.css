@@ -41,7 +41,7 @@ img {border:none;}
 #left button[value="Off"] {background: url(/images/smart/button02.png) no-repeat left top;}
 
 #contents {position: relative; height: 100%; overflow: hidden;  background-color: #fff; }
-#view {position: relative; float:left;  overflow:hidden;}
+#view {position: relative; float:left; padding: 0 15px;  overflow:hidden;}
 
     .page {position: absolute; top:0; left:0; padding: 0 15px; min-width: 99%; min-height: 100%; overflow:hidden;}
     .page_move_right {position: absolute; top:0; right:0; width: 15px; height:100%; background-color: #e1eceb; opacity: 0.7; -ms-filter: alpha(opacity=70); filter: alpha(opacity=70); cursor: pointer;}
