@@ -120,7 +120,9 @@
 
 			//PageMoveRL($view_area, $('.page'));
 
-			var ajax_indicator_padding = parseInt( ($(window).height() - $('#header').outerHeight()) / 2 );			
+			ajax_indicator_padding = parseInt( ($(window).height() - $('#header').outerHeight()) / 2 );
+			
+			$('#view').append(jQuery(ajax_indicator));
 			$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
         });
     }

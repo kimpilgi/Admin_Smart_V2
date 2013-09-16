@@ -13,7 +13,9 @@
 				HeadMenuWrapId : "head",
 				HeadMenuRel : "",
 				LeftMenuWrapId : "left",
-				LeftMenuText : ""
+				LeftMenuText : "",
+				ViewAreaId: "view",
+				PageAreaClass: "page",
 			}, options);
 
 			// Variable - Start
@@ -37,6 +39,8 @@
 						'this' : $(this)
 					,	'header' : $('#' + settings.HeadMenuWrapId)	// navi
 					,	'left' : $('#' + settings.LeftMenuWrapId)	// left
+					,	'view' : $('#' + settings.ViewAreaId)	// view
+					,	'page' : $('.' + settings.PageAreaClass)	// page
 				}
 
 				if ( $objs.header.length < 1 || $objs.left.length < 1)
@@ -97,6 +101,9 @@
 					var Method = {
 
 						Init : function(){
+							var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();
+							$objs.view.width(view_width);
+
 							var $activeLeftUl;
 
 							$.fn.LinkDisable(menu_links.HeadLinks);
@@ -142,7 +149,7 @@
 								$.fn.LoadLinkData( $activeLeftUl );
 								LeftFirstMenuOpen( $activeLeftUl );
 							});
-
+							
 							menu_links.LeftLinks_HasUl.click(function(e){
 								$this = $(this);
 
@@ -158,6 +165,18 @@
 												.children("ul").hide();
 									}
 								}
+							});
+
+							menu_links.LeftLinks_NHasUl.click(function(e){
+								$this = $(this);
+
+								$this.ajaxSubmit({
+									action : $this.attr('href')
+								}, function(){
+									$this.parent('li').siblings('li').children('a').removeClass('active')
+										.end().end().end()
+										.addClass('active');
+								});
 							});
 						}
 					};
@@ -236,67 +255,70 @@
 		ajaxSubmit : function(options, callMethod){
 
 			var callbacks = $.Callbacks();
-			var tagName = "";
+			var tagName = "", formaction = "";
 
-			// Default Param
-			settings = jQuery.extend({
-				method : 'POST',
-				action : '',
-				datatype : 'html',
-				target : '.page'
-			}, options || {});
+			if ($.fn.IsAjaxRunning() == false)
+			{
+				// Default Param
+				settings = jQuery.extend({
+					method : 'POST',
+					action : '',
+					datatype : 'html',
+					target : '.page'
+				}, options || {});
 
-			return this.each(function(){
-				var $this = $(this);
+				return this.each(function(){
+					var $this = $(this);
 
-				tagName = this.tagName;
+					tagName = this.tagName;
 
-				if (tagName == "A")
-				{						
-					settings.action = $this.attr('href');
-				}
-				else if (tagName == "FORM")
-				{
-					if (settings.action == '')
-					{
-						if (typeof $this.attr('action') != "undefined"){
-							settings.action = $this.attr('action');
+					if (tagName == "A" || tagName == "FORM")
+					{						
+						if (tagName == "A")
+							settings.action = $this.attr('href');
+						else if (tagName == "FORM"){
+							formaction = $this.attr('action');
+							if (typeof formaction != "undefined" )
+							{
+								settings.action = formaction;
+							}						
 						}
-						else{
-							$.fn.Error('href or action value empty');
-							return false;
+
+						if (settings.action == "")
+						{
+							$.fn.Error("Nothing connect link.");
+							settings.action = "/error_page.html";
+						}						
+					}
+
+					var methods = {
+						basic : function($this){
+							$.ajax({
+								type: settings.method,
+								url: settings.action,
+								dataType: settings.datatype,
+								data : $this.serialize(),
+								cache: false,
+								success: function (data) {
+
+									Revision_Height(settings.target, data);
+
+									callbacks.add(callMethod);
+									callbacks.fire(data);
+								},
+								error : function(a, b, c, d){
+									var error_msg = "";
+									error_msg += a.responseText + '<br/>';
+
+									$(settings.target).html(error_msg);
+								}
+							});											
 						}
-					}
-				}
+					};
 
-				var methods = {
-					basic : function($this){
-						$.ajax({
-							type: settings.method,
-							url: settings.action,
-							dataType: settings.datatype,
-							data : $this.serialize(),
-							cache: false,
-							success: function (data) {
-
-								Revision_Height(settings.target, data);
-
-								callbacks.add(callMethod);
-								callbacks.fire(data);
-							},
-							error : function(a, b, c, d){
-								var error_msg = "";
-								error_msg += a.responseText + '<br/>';
-
-								$(settings.target).html(error_msg);
-							}
-						});											
-					}
-				};
-
-				methods.basic($this);
-				
-			});
+					methods.basic($this);				
+				});
+			}
 		},
 		AjaxCheck : function(){
 			$(document)

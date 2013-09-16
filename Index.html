@@ -14,13 +14,15 @@
     <script type="text/javascript">
 
 		$(document).ready(function(){
-			$.AjaxPageView();
+			//$.AjaxPageView();
 
 			$('body').TotalMenu({
 				HeadMenuWrapId : "navi",
 				HeadMenuRel : "data",
 				LeftMenuWrapId : "left",
-				LeftMenuText : ""
+				LeftMenuText : "",
+				ViewAreaId: "view",
+				PageAreaClass: "page",
 			});
 
 			$.linkUline({
