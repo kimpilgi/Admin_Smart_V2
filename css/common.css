@@ -15,6 +15,7 @@ fieldset {padding: 10px;}
 img {border:none;}
 
 
+
 #wrap {min-height: 100%; height: 100%;}
 #header {position: relative; width: 100%;  background-color:#fff; color:#464646; overflow:hidden;}
     #header h1 {float: left; width: 223px; height: 59px;  background: url( /images/smart/top_logo.gif) no-repeat left top;}
@@ -242,3 +243,6 @@ div.page_title .icon_dia { padding-left: 12px; background: url(/images/smart/tit
 .level_dis_cnt_tit, .level_dis_cnt_col {display: inline-block; }
 .level_dis_cnt_tit {text-align:center; width: 72px;}
 .level_dis_cnt_col {text-align:right; width: 65px; padding-right: 4px;}
+
+
+.strong { font-weight: bold }

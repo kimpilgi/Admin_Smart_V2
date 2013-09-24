@@ -297,7 +297,7 @@
 					target : '.page'
 				}, options || {});
 
-				return this.each(function(){
+				//return this.each(function(){
 					var $this = $(this);
 
 					tagName = this.tagName;
@@ -347,7 +347,7 @@
 					};
 
 					methods.basic($this);				
-				});
+				//});
 			}
 		},
 		AjaxCheck : function(){
