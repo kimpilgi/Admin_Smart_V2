@@ -24,6 +24,7 @@ function DelCookie(cKey) {
     document.cookie = cKey + "=;expires=" + date.toGMTString() + ';path=/';
 }
 
+/*
 function PageMoveRL(viewObj, pageObj)
 {
 	var distance = 0;
@@ -51,7 +52,7 @@ function PageMoveRL(viewObj, pageObj)
 			pageObj.animate({ left: 0 }, 500);
 	});
 }
-
+*/
 jQuery.linkUline = function (options) {
 
     jQuery.linkUline.defaults = {

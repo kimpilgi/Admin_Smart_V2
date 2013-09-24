@@ -31,6 +31,11 @@
 			$('#view').append(jQuery(ajax_indicator));
 			$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
 
+			if ($.cookie('head_rel') != "")
+			{
+				settings.HeadMenuRel = $.cookie('head_rel');
+			}
+
 			// Variable - End
 
 			return this.each(function(){
@@ -80,7 +85,9 @@
 
 						var $firstLi = "", $parentsList, $href;
 
-						$activeLeftUl.siblings('ul').hide().end().show();	
+						$activeLeftUl.siblings('ul').hide()
+									.find('li a').removeClass('active')
+									.end().end().show();	
 
 						$firstLi = $activeLeftUl.find('li').filter(':not(:has(ul))').first();
 						$parentsList = $firstLi.parentsUntil('#' + settings.LeftMenuWrapId);
@@ -101,7 +108,7 @@
 					var Method = {
 
 						Init : function(){
-							var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth();
+							var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth() - 17;
 							$objs.view.width(view_width);
 
 							var $activeLeftUl;
@@ -120,6 +127,7 @@
 								$objs.left.children('ul').not( menu_active.ActiveLeftMenu(settings.HeadMenuRel) ).hide();	// head menu matching left menu view
 
 								$activeLeftUl = menu_active.ActiveLeftMenu( settings.HeadMenuRel );
+
 								$.fn.LoadLinkData( $activeLeftUl );
 								LeftFirstMenuOpen( $activeLeftUl );
 							}
@@ -178,11 +186,33 @@
 										.addClass('active');
 								});
 							});
+						},
+						Resize : function(){
+							$(window).bind('resize', function(e)
+							{
+								$objs.page.empty().find('*').remove()
+
+								window.resizeEvt;
+								$(window).resize(function()
+								{
+									clearTimeout(window.resizeEvt);
+									window.resizeEvt = setTimeout(function()
+									{
+										var active_headmenu = menu_links.HeadLinks.filter('.active');
+										var active_leftmenu = menu_links.LeftLinks.filter('.active');
+
+										$.cookie('head_rel', active_headmenu.attr('rel'));  
+
+										location.reload();
+									}, 250);
+								});
+							});	
 						}
 					};
 
 					Method.Init();
 					Method.Click();
+					Method.Resize();
 
 					$.fn.AjaxCheck();	
 				}
@@ -331,7 +361,7 @@
 						$('#ajax_indicator').fadeOut(function(){
 							ajaxRunning = false;
 						});  						
-					}, 300);
+					}, 300);	
 				})
 				.ajaxError(function(event, jqxhr, settings, exception){
 					//$.fn.Error(jqxhr.status + '-' + jqxhr.statusText);				
