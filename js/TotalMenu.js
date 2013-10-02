@@ -31,11 +31,6 @@
 			$('#container').append(jQuery(ajax_indicator));
 			$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
 
-			if ($.cookie('head_rel') != "")
-			{
-				settings.HeadMenuRel = $.cookie('head_rel');
-			}
-
 			// Variable - End
 
 			return this.each(function(){
