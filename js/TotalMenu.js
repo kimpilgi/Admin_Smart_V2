@@ -105,6 +105,13 @@
 						}			
 					};
 
+					var Local_Method = {
+						Set_Container_Per_Width : function(){
+							var persent = (($(window).width() - $objs.left.width()) / $(window).width()) * 100 + '%';
+							$('#container').css('width', persent);
+						}
+					};
+
 					var Method = {
 
 						Init : function(){
@@ -137,14 +144,7 @@
 
 							menu_links.LeftLinks_NHasUl.end().css({ background: 'url(' + icon_img.dot + ') no-repeat center left' });
 
-
-							var persent = (($(window).width() - $('#left').width()) / $(window).width()) * 100 + '%';
-							$('#container').css('width', persent);
-
-							console.log( $('#left').width()  );
-							console.log( $(window).width() );
-
-							console.log( (($(window).width() - $('#left').width()) / $(window).width()) * 100 );
+							Local_Method.Set_Container_Per_Width();
 						},
 						Click : function(){
 							var $this;
@@ -204,8 +204,7 @@
 									clearTimeout(window.resizeEvt);
 									window.resizeEvt = setTimeout(function()
 									{
-										persent = (($(window).width() - $('#left').width()) / $(window).width()) * 100 + '%';
-										$('#container').css('width', persent);
+										Local_Method.Set_Container_Per_Width();
 
 										ajax_indicator_padding = parseInt( $(window).height() / 2 );
 										$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
