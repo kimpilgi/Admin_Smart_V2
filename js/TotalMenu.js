@@ -21,14 +21,14 @@
 			// Variable - Start
 			var ajax_indicator = "", ajax_indicator_padding;
 
-			ajax_indicator = ajax_indicator + "<div id='ajax_indicator' style='position: relative; top: 0; height: 100%; z-index:9998;text-align:center; '>"
+			ajax_indicator = ajax_indicator + "<div id='ajax_indicator' style='position: absolute; top: 0; width: 100%; height: 100%; z-index:9998;text-align:center; '>"
 			ajax_indicator = ajax_indicator + " <div id='ajax_indicator_back' style='height: 100%; background-color: #000; opacity : 0.3; -ms-filter: alpha(opacity=30); filter: alpha(opacity=30);'></div>";
 			ajax_indicator = ajax_indicator + " <div id='ajax_indicator_circle' style='position:absolute; top: 0; text-align:center; width: 100%; z-index:9999;'><img src='/images/ajax-loader.gif' alt='LOADING... WAIT PLEASE' title='LOADING... WAIT PLEASE' /></div>";
 			ajax_indicator = ajax_indicator + "</div>";
 
-			ajax_indicator_padding = parseInt( ($(window).height() - $('#header').outerHeight()) / 2 );
-			
-			$('#view').append(jQuery(ajax_indicator));
+			ajax_indicator_padding = parseInt( $(window).height() / 2 );
+
+			$('#container').append(jQuery(ajax_indicator));
 			$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
 
 			if ($.cookie('head_rel') != "")
@@ -108,8 +108,6 @@
 					var Method = {
 
 						Init : function(){
-							var view_width = $(window).width() - $('#left').outerWidth() - $('.page_move_right').outerWidth() - $('.page_move_left').outerWidth() - 17;
-							$objs.view.width(view_width);
 
 							var $activeLeftUl;
 
@@ -133,6 +131,7 @@
 							}
 
 							menu_list.LeftMenuList.css({ paddingLeft: '12px' });
+
 							menu_links.LeftLinks_HasUl.end().find('ul').hide()
 													  .end().css({ background: 'url(' + icon_img.plus + ') no-repeat 0 2px' });
 
@@ -190,20 +189,15 @@
 						Resize : function(){
 							$(window).bind('resize', function(e)
 							{
-								$objs.page.empty().find('*').remove()
-
 								window.resizeEvt;
 								$(window).resize(function()
 								{
 									clearTimeout(window.resizeEvt);
 									window.resizeEvt = setTimeout(function()
 									{
-										var active_headmenu = menu_links.HeadLinks.filter('.active');
-										var active_leftmenu = menu_links.LeftLinks.filter('.active');
+										ajax_indicator_padding = parseInt( $(window).height() / 2 );
+										$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
 
-										$.cookie('head_rel', active_headmenu.attr('rel'));  
-
-										location.reload();
 									}, 250);
 								});
 							});	
@@ -231,8 +225,6 @@
 				{
 					href = $activeLeftUl.find('li').filter(':not(:has(ul))').first().children('a').attr('href');
 
-					$('#view').height($(window).height() - $('#header').outerHeight() - 1);
-
 					if (href == "")
 					{
 						$.fn.Error("Nothing connect link.");
@@ -245,8 +237,12 @@
 					url: href,
 					dataType: "html",
 					cache: false,
+					beforeSend : function(){
+						$('#view').height($(window).height() - $('#header').outerHeight() - 1);
+					},
 					success: function (data) {
-						Revision_Height('.page', data);
+						$('.page').html(data);
+						$('#left').height( $('.page').height());
 					},
 					error : function(a, b, c, d){
 						var error_msg = "";
@@ -297,7 +293,8 @@
 					target : '.page'
 				}, options || {});
 
-				//return this.each(function(){
+				return this.each(function(){
+					
 					var $this = $(this);
 
 					tagName = this.tagName;
@@ -330,8 +327,10 @@
 								data : $this.serialize(),
 								cache: false,
 								success: function (data) {
+									$(settings.target).html(data);
 
-									Revision_Height(settings.target, data);
+									$('#view').height( $('.page').height() );
+									$('#left').height( $('.page').height());
 
 									callbacks.add(callMethod);
 									callbacks.fire(data);
@@ -347,7 +346,7 @@
 					};
 
 					methods.basic($this);				
-				//});
+				});
 			}
 		},
 		AjaxCheck : function(){
@@ -360,7 +359,7 @@
 					setTimeout( function(){	
 						$('#ajax_indicator').fadeOut(function(){
 							ajaxRunning = false;
-						});  						
+						}); 
 					}, 300);	
 				})
 				.ajaxError(function(event, jqxhr, settings, exception){
@@ -374,22 +373,4 @@
 		}
 	});
 
-	function Revision_Height(target, data)
-	{
-		if ($('#view').height() > $(window).height() - $('#header').outerHeight() )
-		{
-			$('#view').height( $(window).height() - $('#header').outerHeight() );
-		}
-
-		$(target).html(data);
-
-		if ($('.page').height() > $('#view').height())
-		{
-			$('#view').height($('.page').height() + 30 );
-		}
-
-		$('#left_back').height($('#contents').height());
-
-		//PageMoveRL($('#view'), $('.page'));		
-	}
 })(jQuery);

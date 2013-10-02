@@ -14,11 +14,10 @@
     <script type="text/javascript">
 
 		$(document).ready(function(){
-			//$.AjaxPageView();
 
 			$('body').TotalMenu({
 				HeadMenuWrapId : "navi",
-				HeadMenuRel : "data",
+				HeadMenuRel : "present",
 				LeftMenuWrapId : "left",
 				LeftMenuText : "",
 				ViewAreaId: "view",
@@ -48,21 +47,17 @@
 			</div>
 		</div>
 
-		<div id="container">
+		<div id="left">
+			<!-- #include virtual="/include/leftmenu.html" -->
+		</div>
 
+
+		<div id="container">
 			<div id="contents">
-				<div id="left_back"></div>
-				<div id="left">
-					<!-- #include virtual="/include/leftmenu.html" -->
-				</div>
 
 				<div id="view">
 					<div class="page"></div>
 				</div>
-
-                <div class="page_move_right"><span class="right_arrow">&nbsp;</span></div>
-                <div class="page_move_left"><span class="left_arrow">&nbsp</span></div>
-
 			</div>
 		</div>
 	</div>
