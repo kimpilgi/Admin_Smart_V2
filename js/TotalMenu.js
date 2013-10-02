@@ -136,6 +136,15 @@
 													  .end().css({ background: 'url(' + icon_img.plus + ') no-repeat 0 2px' });
 
 							menu_links.LeftLinks_NHasUl.end().css({ background: 'url(' + icon_img.dot + ') no-repeat center left' });
+
+
+							var persent = (($(window).width() - $('#left').width()) / $(window).width()) * 100 + '%';
+							$('#container').css('width', persent);
+
+							console.log( $('#left').width()  );
+							console.log( $(window).width() );
+
+							console.log( (($(window).width() - $('#left').width()) / $(window).width()) * 100 );
 						},
 						Click : function(){
 							var $this;
@@ -195,6 +204,9 @@
 									clearTimeout(window.resizeEvt);
 									window.resizeEvt = setTimeout(function()
 									{
+										persent = (($(window).width() - $('#left').width()) / $(window).width()) * 100 + '%';
+										$('#container').css('width', persent);
+
 										ajax_indicator_padding = parseInt( $(window).height() / 2 );
 										$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
 
@@ -242,6 +254,8 @@
 					},
 					success: function (data) {
 						$('.page').html(data);
+
+						$('#view').height( $('.page').height() );
 						$('#left').height( $('.page').height());
 					},
 					error : function(a, b, c, d){
@@ -326,6 +340,9 @@
 								dataType: settings.datatype,
 								data : $this.serialize(),
 								cache: false,
+								beforeSend : function(){
+									$('#view').height($(window).height() - $('#header').outerHeight() - 1);
+								},
 								success: function (data) {
 									$(settings.target).html(data);
 
