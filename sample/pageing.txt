@@ -1,0 +1,18 @@
+<script type="text/javascript">
+
+	$('#search_user').ajaxSubmit({
+		'action' : '/page/t_user/list.asp',
+		'target' : '#list',
+		'runningExecute' : true
+	}, function(){
+		$(document).on('click', '.pageing', function(e){
+			e.preventDefault();
+
+			$(this).ajaxSubmit({
+				'action' : '/page/t_user/list.asp?n4Page=' + $(this).attr('rel'),
+				'target' : '#list'
+			});
+		});
+	});
+
+<script type="text/javascript">

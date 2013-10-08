@@ -22,13 +22,13 @@
 			var ajax_indicator = "", ajax_indicator_padding;
 
 			ajax_indicator = ajax_indicator + "<div id='ajax_indicator' style='position: absolute; top: 0; width: 100%; height: 100%; z-index:9998;text-align:center; '>"
-			ajax_indicator = ajax_indicator + " <div id='ajax_indicator_back' style='height: 100%; background-color: #000; opacity : 0.3; -ms-filter: alpha(opacity=30); filter: alpha(opacity=30);'></div>";
-			ajax_indicator = ajax_indicator + " <div id='ajax_indicator_circle' style='position:absolute; top: 0; text-align:center; width: 100%; z-index:9999;'><img src='/images/ajax-loader.gif' alt='LOADING... WAIT PLEASE' title='LOADING... WAIT PLEASE' /></div>";
+			ajax_indicator = ajax_indicator + " <div id='ajax_indicator_back' style='height: 100%; background-color: #000; opacity : 0.5; -ms-filter: alpha(opacity=30); filter: alpha(opacity=30);'></div>";
+			ajax_indicator = ajax_indicator + " <div id='ajax_indicator_circle' style='position:absolute; top: 0; text-align:center; width: 100%; z-index:9999; '><img src='/images/ajax-loader.gif' alt='LOADING... WAIT PLEASE' title='LOADING... WAIT PLEASE' /></div>";
 			ajax_indicator = ajax_indicator + "</div>";
 
 			ajax_indicator_padding = parseInt( $(window).height() / 2 );
 
-			$('#container').append(jQuery(ajax_indicator));
+			$('body').append(jQuery(ajax_indicator));
 			$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
 
 			// Variable - End
@@ -189,6 +189,7 @@
 										.addClass('active');
 								});
 							});
+
 						},
 						Resize : function(){
 							$(window).bind('resize', function(e)
@@ -200,6 +201,8 @@
 									window.resizeEvt = setTimeout(function()
 									{
 										Local_Method.Set_Container_Per_Width();
+										$('#view').height( $('.page').height() );
+										$('#left').height( $.fn.GetBaseHeight() );
 
 										ajax_indicator_padding = parseInt( $(window).height() / 2 );
 										$('#ajax_indicator_circle').css({ top: ajax_indicator_padding + 'px' });
@@ -207,12 +210,25 @@
 									}, 250);
 								});
 							});	
+						},
+						HashChange : function(){
+							$(window).on('hashchange', function(e){
+								var event = e;
+								var newUrl = e.originalEvent.newURL;
+
+								newUrl = newUrl.replace(this.location.origin + '/#','') + '.html';
+
+								$('body').ajaxSubmit({
+									action : newUrl
+								});
+							});
 						}
 					};
 
 					Method.Init();
 					Method.Click();
 					Method.Resize();
+					Method.HashChange();
 
 					$.fn.AjaxCheck();	
 				}
@@ -238,6 +254,8 @@
 					}
 				}
 
+				$.fn.SetLocationHash(href);
+
 				$.ajax({
 					type: "GET",
 					url: href,
@@ -250,7 +268,7 @@
 						$('.page').html(data);
 
 						$('#view').height( $('.page').height() );
-						$('#left').height( $('.page').height());
+						$('#left').height( $.fn.GetBaseHeight() );
 					},
 					error : function(a, b, c, d){
 						var error_msg = "";
@@ -291,40 +309,50 @@
 			var callbacks = $.Callbacks();
 			var tagName = "", formaction = "";
 
-			if ($.fn.IsAjaxRunning() == false)
-			{
-				// Default Param
-				settings = jQuery.extend({
-					method : 'POST',
-					action : '',
-					datatype : 'html',
-					target : '.page'
-				}, options || {});
+			// Default Param
+			settings = jQuery.extend({
+				method : 'POST',
+				action : '',
+				datatype : 'html',
+				target : '.page',
+				runningExecute : false
+			}, options || {});
 
+			if ($.fn.IsAjaxRunning() == false || settings.runningExecute == true)
+			{
 				return this.each(function(){
-					
+
 					var $this = $(this);
+
+					$.fn.LinkDisable($this);
 
 					tagName = this.tagName;
 
 					if (tagName == "A" || tagName == "FORM")
 					{						
-						if (tagName == "A")
-							settings.action = $this.attr('href');
-						else if (tagName == "FORM"){
-							formaction = $this.attr('action');
-							if (typeof formaction != "undefined" )
-							{
-								settings.action = formaction;
-							}						
-						}
-
 						if (settings.action == "")
 						{
-							$.fn.Error("Nothing connect link.");
-							settings.action = "/error_page.html";
-						}						
+
+							if (tagName == "A"){
+								settings.action = $this.attr('href');
+							}
+							else if (tagName == "FORM"){
+								formaction = $this.attr('action');
+								if (typeof formaction != "undefined" )
+								{
+									settings.action = formaction;
+								}						
+							}
+
+							if (settings.action == "" || typeof settings.action == "undefined")
+							{
+								$.fn.Error("Nothing connect link.");
+								settings.action = "/error_page.html";
+							}						
+						}
 					}
+
+					$.fn.SetLocationHash(settings.action);
 
 					var methods = {
 						basic : function($this){
@@ -341,7 +369,7 @@
 									$(settings.target).html(data);
 
 									$('#view').height( $('.page').height() );
-									$('#left').height( $('.page').height());
+									$('#left').height( $.fn.GetBaseHeight() );
 
 									callbacks.add(callMethod);
 									callbacks.fire(data);
@@ -365,13 +393,16 @@
 				.ajaxStart(function(){
 					$('#ajax_indicator').show();
 					ajaxRunning = true;
+					window.scrollTo(0,0);
 				})
 				.ajaxComplete(function(){
 					setTimeout( function(){	
 						$('#ajax_indicator').fadeOut(function(){
 							ajaxRunning = false;
-						}); 
+						});
 					}, 300);	
+
+					console.log( document.location);
 				})
 				.ajaxError(function(event, jqxhr, settings, exception){
 					//$.fn.Error(jqxhr.status + '-' + jqxhr.statusText);				
@@ -381,6 +412,12 @@
 		},
 		IsAjaxRunning : function(){
 			return ajaxRunning;
+		},
+		GetBaseHeight : function(){
+			return $(window).height() - $('#header').height();
+		},
+		SetLocationHash : function(url){
+			document.location.hash = url.replace('.html','');
 		}
 	});
 
