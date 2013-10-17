@@ -359,6 +359,8 @@
 					}
 
 //					$.fn.SetLocationHash(settings.action);
+					settings.action = $.fn.ParameterEscape(settings.action);
+
 
 					var methods = {
 						basic : function($this){
@@ -421,6 +423,43 @@
 		},
 		SetLocationHash : function(url){
 			document.location.hash = url.replace('.html','');
+		},
+		ParameterEscape : function(url){
+
+			var return_url = "";
+			var array_action = "", array_param = "", array_param_len = 0;
+			var action_src = "", action_param = "", new_param = "";
+
+			array_action = url.split("?");
+
+			if (array_action.length > 1)
+			{
+				action_src = array_action[0];
+				action_param = array_action[1];
+				new_param = "";
+				
+				array_param = action_param.split("&");
+				array_param_len = array_param.length;
+
+				for(var item in array_param)
+				{
+					var key = array_param[item].split("=")[0];
+					var val = escape( array_param[item].split("=")[1]);
+
+					new_param = new_param + key + "=" + val
+
+					if (array_param_len > 1 && (array_param_len - 1 > item))
+					{
+						new_param = new_param + "&";
+					}
+				}
+
+				return_url = action_src + "?" + new_param;
+			}
+			else
+				return_url = url;
+
+			return return_url;
 		}
 	});
 
