@@ -142,7 +142,7 @@
 							Local_Method.Set_Container_Per_Width();
 						},
 						Click : function(){
-							var $this;
+							var $this, href;
 
 							menu_links.HeadLinks.click(function(){
 
@@ -180,9 +180,12 @@
 
 							menu_links.LeftLinks_NHasUl.click(function(e){
 								$this = $(this);
+								href = $this.attr('href');
+
+								$.fn.SetLocationHash(href);
 
 								$this.ajaxSubmit({
-									action : $this.attr('href')
+									action : href
 								}, function(){
 									$this.parent('li').siblings('li').children('a').removeClass('active')
 										.end().end().end()
@@ -213,12 +216,11 @@
 						},
 						HashChange : function(){
 							$(window).on('hashchange', function(e){
-								var event = e;
 								var newUrl = e.originalEvent.newURL;
-
+								
 								newUrl = newUrl.replace(this.location.origin + '/#','') + '.html';
 
-								$('body').ajaxSubmit({
+								$(this).ajaxSubmit({
 									action : newUrl
 								});
 							});
@@ -254,7 +256,7 @@
 					}
 				}
 
-				$.fn.SetLocationHash(href);
+				//$.fn.SetLocationHash(href);
 
 				$.ajax({
 					type: "GET",
@@ -299,7 +301,7 @@
 				if (typeof callMethod != "undefined")
 				{
 					callbacks.add(callMethod);
-					callbacks.fire(e.toElement);
+					callbacks.fire(e.target);
 					callbacks.empty();
 				}
 			});
@@ -307,7 +309,7 @@
 		ajaxSubmit : function(options, callMethod){
 
 			var callbacks = $.Callbacks();
-			var tagName = "", formaction = "";
+			var tagName = "", formaction = "", target = "";
 
 			// Default Param
 			settings = jQuery.extend({
@@ -318,8 +320,11 @@
 				runningExecute : false
 			}, options || {});
 
+			target = settings.target;
+
 			if ($.fn.IsAjaxRunning() == false || settings.runningExecute == true)
 			{
+
 				return this.each(function(){
 
 					var $this = $(this);
@@ -348,11 +353,12 @@
 							{
 								$.fn.Error("Nothing connect link.");
 								settings.action = "/error_page.html";
+								$.fn.SetLocationHash(settings.action);
 							}						
 						}
 					}
 
-					$.fn.SetLocationHash(settings.action);
+//					$.fn.SetLocationHash(settings.action);
 
 					var methods = {
 						basic : function($this){
@@ -366,8 +372,7 @@
 									$('#view').height($(window).height() - $('#header').outerHeight() - 1);
 								},
 								success: function (data) {
-									$(settings.target).html(data);
-
+									$(target).html(data);
 									$('#view').height( $('.page').height() );
 									$('#left').height( $.fn.GetBaseHeight() );
 
@@ -401,8 +406,6 @@
 							ajaxRunning = false;
 						});
 					}, 300);	
-
-					console.log( document.location);
 				})
 				.ajaxError(function(event, jqxhr, settings, exception){
 					//$.fn.Error(jqxhr.status + '-' + jqxhr.statusText);				
